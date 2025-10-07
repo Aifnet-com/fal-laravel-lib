@@ -2,7 +2,7 @@
     "name": "aifnet-com/fal-laravel",
     "description": "FAL Laravel integration library",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Aifnet\\Fal\\": "src/"

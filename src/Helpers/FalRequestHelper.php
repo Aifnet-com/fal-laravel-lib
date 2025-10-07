@@ -23,7 +23,7 @@ class FalRequestHelper
         $webhookUrl = route('fal.webhook');
 
         if (app()->environment('local')) {
-            $webhookUrl = Str::replace(env('WEBSITE_URL'), env('NGROK_URL_FOR_FAL_WEBHOOK_LOCALHOST'), $webhookUrl);
+            $webhookUrl = Str::replace(config('app.url'), env('NGROK_URL_FOR_FAL_WEBHOOK_LOCALHOST'), $webhookUrl);
         }
 
         return $webhookUrl;
