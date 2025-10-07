@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Lib\Fal\Helpers;
+namespace Aifnet\Fal\Helpers;
 
-use App\Lib\Fal\Models\FalRequest;
+use Aifnet\Fal\Models\FalRequest;
 
 class FalWebhookHelper
 {

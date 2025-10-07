@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Lib\Fal\Models;
+namespace Aifnet\Fal\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

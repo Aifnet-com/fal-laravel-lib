@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Lib\Fal\Http\Controllers;
+namespace Aifnet\Fal\Http\Controllers;
 
 use App\Models\Error;
-use App\Lib\Fal\Helpers\FalWebhookHelper;
-use App\Lib\Fal\Events\FalWebhookArrived;
-use App\Lib\Fal\Models\FalRequest;
+use Aifnet\Fal\Helpers\FalWebhookHelper;
+use Aifnet\Fal\Events\FalWebhookArrived;
+use Aifnet\Fal\Models\FalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 

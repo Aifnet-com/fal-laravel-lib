@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Lib\Fal\Events;
+namespace Aifnet\Fal\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

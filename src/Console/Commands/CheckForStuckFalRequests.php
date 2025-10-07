@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Lib\Fal\Console\Commands;
+namespace Aifnet\Fal\Console\Commands;
 
-use App\Lib\Fal\Events\FalWebhookArrived;
-use App\Lib\Fal\Models\FalRequest;
+use Aifnet\Fal\Events\FalWebhookArrived;
+use Aifnet\Fal\Models\FalRequest;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -23,12 +23,14 @@ class CheckForStuckFalRequests extends Command
         foreach ($requests as $falRequest) {
             $falRequest->fail('Timed out - refunded.');
 
-            event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
+            event(new FalWebhookArrived([
+                'falRequestId' => $falRequest->request_id
+            ]));
 
             $failed++;
         }
 
-        $this->info("{$failed} FAL requests were unstuck.");
+        $this->info($failed . ' FAL requests were unstuck.');
 
         if ($failed > 0) {
             Log::debug('[CheckForStuckFalRequests] ' . $failed . ' FAL requests were unstuck.', [

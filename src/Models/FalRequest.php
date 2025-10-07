@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Lib\Fal\Models;
+namespace Aifnet\Fal\Models;
 
 use App\Models\Error;
-use App\Lib\Fal\Helpers\FalRequestHelper;
+use Aifnet\Fal\Helpers\FalRequestHelper;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
@@ -117,9 +117,9 @@ class FalRequest extends Model
         return $this->save();
     }
 
-    public static function findByRequestId($requestId)
+    public static function findByRequestId($requestId, $with = [])
     {
-        return self::where('request_id', $requestId)->first();
+        return self::with($with)->where('request_id', $requestId)->first();
     }
 
     public static function submit(

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Lib\Fal\Helpers;
+namespace Aifnet\Fal\Helpers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
