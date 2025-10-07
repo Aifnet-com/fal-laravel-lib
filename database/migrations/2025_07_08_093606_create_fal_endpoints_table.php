@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::createIfNotExists('fal_endpoints', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique()->index();
-            $table->timestamp('created_at')->useCurrent();
-        });
+        if (! Schema::hasTable('fal_endpoints')) {
+            Schema::create('fal_endpoints', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->unique()->index();
+                $table->timestamp('created_at')->useCurrent();
+            });
+        }
     }
 
     /**

@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('fal_errors', function (Blueprint $table) {
-            $table->id();
-            $table->string('message');
-            $table->string('md5')->unique()->index();
-            $table->timestamp('created_at')->useCurrent();
-        });
+        if (! Schema::hasTable('fal_errors')) {
+            Schema::create('fal_errors', function (Blueprint $table) {
+                $table->id();
+                $table->string('message');
+                $table->string('md5')->unique()->index();
+                $table->timestamp('created_at')->useCurrent();
+            });
+        }
     }
 
     /**

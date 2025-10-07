@@ -13,18 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::createIfNotExists('fal_requests', function (Blueprint $table) {
-            $table->id();
-            $table->string('request_id')->index();
-            $table->unsignedBigInteger('user_id')->nullable()->index();
-            $table->unsignedBigInteger('endpoint_id')->index();
-            $table->unsignedBigInteger('data_id')->index();
-            $table->unsignedBigInteger('error_id')->nullable()->index();
-            $table->unsignedSmallInteger('type')->index()->default(0);
-            $table->unsignedTinyInteger('status')->index();
-            $table->timestamp('completed_at')->nullable()->index();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('fal_requests')) {
+            Schema::create('fal_requests', function (Blueprint $table) {
+                $table->id();
+                $table->string('request_id')->index();
+                $table->unsignedBigInteger('user_id')->nullable()->index();
+                $table->unsignedBigInteger('endpoint_id')->index();
+                $table->unsignedBigInteger('data_id')->index();
+                $table->unsignedBigInteger('error_id')->nullable()->index();
+                $table->unsignedSmallInteger('type')->index()->default(0);
+                $table->unsignedTinyInteger('status')->index();
+                $table->timestamp('completed_at')->nullable()->index();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

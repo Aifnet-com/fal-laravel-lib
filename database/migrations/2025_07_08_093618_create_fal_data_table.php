@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::createIfNotExists('fal_data', function (Blueprint $table) {
-            $table->id();
-            $table->json('input')->nullable();
-            $table->json('output')->nullable();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('fal_data')) {
+            Schema::create('fal_data', function (Blueprint $table) {
+                $table->id();
+                $table->json('input')->nullable();
+                $table->json('output')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
