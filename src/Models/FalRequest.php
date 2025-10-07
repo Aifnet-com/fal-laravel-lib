@@ -102,9 +102,7 @@ class FalRequest extends Model
         $this->status = self::STATUS_FAILED;
         $this->updated_at = now();
         $this->completed_at = now();
-        $this->error_id = FalError::logGetId(
-            $message = $errorMessage
-        );
+        $this->error_id = FalError::logGetId($errorMessage);
 
         return $this->save();
     }
