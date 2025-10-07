@@ -2,9 +2,9 @@
 
 namespace Aifnet\Fal\Http\Controllers;
 
-use App\Models\Error;
 use Aifnet\Fal\Helpers\FalWebhookHelper;
 use Aifnet\Fal\Events\FalWebhookArrived;
+use Aifnet\Fal\Models\FalError;
 use Aifnet\Fal\Models\FalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -47,7 +47,7 @@ class FalWebhookController
         $error = FalWebhookHelper::extractError($requestData);
 
         if ($error) {
-            $update['error_id'] = Error::logGetId($error, Error::SOURCE_FAL);
+            $update['error_id'] = FalError::logGetId($error);
         }
 
         return $update;

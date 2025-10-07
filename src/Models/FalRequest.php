@@ -2,7 +2,6 @@
 
 namespace Aifnet\Fal\Models;
 
-use App\Models\Error;
 use Aifnet\Fal\Helpers\FalRequestHelper;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
@@ -65,7 +64,7 @@ class FalRequest extends Model
 
     public function error()
     {
-        return $this->hasOne(Error::class, 'id', 'error_id');
+        return $this->hasOne(FalError::class, 'id', 'error_id');
     }
 
     public function getTypeNameAttribute()
@@ -109,9 +108,8 @@ class FalRequest extends Model
         $this->status = self::STATUS_FAILED;
         $this->updated_at = now();
         $this->completed_at = now();
-        $this->error_id = Error::logGetId(
-            $message = $errorMessage,
-            $source  = Error::SOURCE_FAL
+        $this->error_id = FalError::logGetId(
+            $message = $errorMessage
         );
 
         return $this->save();
