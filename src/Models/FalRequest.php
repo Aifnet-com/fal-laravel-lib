@@ -4,7 +4,6 @@ namespace Aifnet\Fal\Models;
 
 use Aifnet\Fal\Helpers\FalRequestHelper;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
 class FalRequest extends Model
 {
@@ -55,11 +54,6 @@ class FalRequest extends Model
     public function data()
     {
         return $this->belongsTo(FalData::class, 'data_id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function error()
