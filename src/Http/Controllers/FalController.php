@@ -66,20 +66,13 @@ class FalController
 
     private function extractImageData($output, int $index): ?array
     {
-        if (isset($output['images']) && is_array($output['images'])) {
-            if (! isset($output['images'][$index])) {
-                return null;
-            }
-
+        if (
+            is_array($output) &&
+            isset($output['images']) &&
+            is_array($output['images']) &&
+            array_key_exists($index, $output['images'])
+        ) {
             return $output['images'][$index];
-        }
-
-        if (isset($output['url'])) {
-            return [
-                'url' => $output['url'],
-                'file_name' => null,
-                'content_type' => null,
-            ];
         }
 
         return null;
