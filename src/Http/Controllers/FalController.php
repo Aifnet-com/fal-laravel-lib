@@ -10,7 +10,7 @@ class FalController
 {
     public function download(Request $request, $falRequestId)
     {
-        $falRequest = FalRequest::findByRequestId($falRequestId);
+        $falRequest = FalRequest::findByRequestId($falRequestId, $with = ['data']);
         $filename = $request->input('filename');
         $extension = $request->input('extension');
         $imageIndex = (int) ($request->input('index', 0));
@@ -26,19 +26,19 @@ class FalController
         $output = $falRequest->data->output ?? null;
 
         if (empty($output)) {
-            return response()->json(['error' => 'Something went wrong.'], 404);
+            return response()->json(['error' => 'No output found.'], 404);
         }
 
         $imageData = $this->extractImageData($output, $imageIndex);
 
         if (! $imageData) {
-            return response()->json(['error' => 'Something went wrong.'], 404);
+            return response()->json(['error' => 'No image data found.'], 404);
         }
 
         $url = $imageData['url'];
 
         if (! $this->isValidFalUrl($url)) {
-            return response()->json(['error' => 'Something went wrong.'], 403);
+            return response()->json(['error' => 'Invalid URL.'], 403);
         }
 
         $downloadFilename = $this->resolveFilename($imageData, $falRequestId, $filename, $extension);
@@ -47,7 +47,7 @@ class FalController
         $res = $this->fetchRemoteFile($url);
 
         if ($res->getStatusCode() !== 200) {
-            return response()->json(['error' => 'Something went wrong.'], 502);
+            return response()->json(['error' => 'Failed to fetch file.'], 502);
         }
 
         return response()->streamDownload(function () use ($res) {
