@@ -34,7 +34,7 @@ class FalController
 
         $url = $imageData['url'] ?? null;
 
-        if (empty($url) || ! $this->isValidFalUrl($url)) {
+        if (empty($url)) {
             return response()->json(['error' => 'Invalid file source'], 403);
         }
 
@@ -74,14 +74,6 @@ class FalController
     private function extractImageData($output, $index)
     {
         return $output['images'][$index] ?? $output['image'] ?? null;
-    }
-
-    private function isValidFalUrl($url)
-    {
-        $host = parse_url($url, PHP_URL_HOST);
-        $allowedHosts = ['fal.ai', 'storage.fal.ai', 'cdn.fal.ai', 'v3.fal.media'];
-
-        return in_array($host, $allowedHosts);
     }
 
     private function resolveContentType($imageData)
