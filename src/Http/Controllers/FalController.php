@@ -73,11 +73,7 @@ class FalController
 
     private function extractImageData($output, $index)
     {
-        if (!is_array($output) || !isset($output['images']) || !is_array($output['images'])) {
-            return null;
-        }
-
-        return $output['images'][$index] ?? null;
+        return $output['images'][$index] ?? $output['image'][$index] ?? null;
     }
 
     private function isValidFalUrl($url)
