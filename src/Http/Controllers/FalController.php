@@ -10,99 +10,108 @@ class FalController
 {
     public function download(Request $request, $falRequestId)
     {
-        $falRequest = FalRequest::findByRequestId($falRequestId, $with = ['data']);
-        $filename = $request->input('filename');
-        $extension = $request->input('extension');
-        $imageIndex = (int) ($request->input('index', 0));
+        $falRequest = FalRequest::findByRequestId($falRequestId, ['data']);
 
-        if (empty($falRequest) || empty($falRequest->id)) {
-            return response()->json(['error' => 'Not found.'], 404);
+        if (empty($falRequest)) {
+            return response()->json(['error' => 'File not found'], 404);
         }
 
         if ($falRequest->status !== FalRequest::STATUS_COMPLETED) {
-            return response()->json(['error' => 'Not completed yet.'], 400);
+            return response()->json(['error' => 'Processing not complete'], 400);
         }
 
         $output = $falRequest->data->output ?? null;
-
         if (empty($output)) {
-            return response()->json(['error' => 'No output found.'], 404);
+            return response()->json(['error' => 'No output available'], 404);
         }
 
+        $imageIndex = (int) $request->input('index', 0);
         $imageData = $this->extractImageData($output, $imageIndex);
 
-        if (! $imageData) {
-            return response()->json(['error' => 'No image data found.'], 404);
+        if (empty($imageData)) {
+            return response()->json(['error' => 'Image not found'], 404);
         }
 
-        $url = $imageData['url'];
+        $url = $imageData['url'] ?? null;
 
-        if (! $this->isValidFalUrl($url)) {
-            return response()->json(['error' => 'Invalid URL.'], 403);
+        if (empty($url) || ! $this->isValidFalUrl($url)) {
+            return response()->json(['error' => 'Invalid file source'], 403);
         }
 
+        $filename = $request->input('filename');
+        $extension = $request->input('extension');
         $downloadFilename = $this->resolveFilename($imageData, $falRequestId, $filename, $extension);
         $contentType = $this->resolveContentType($imageData);
 
-        $res = $this->fetchRemoteFile($url);
+        try {
+            $response = $this->fetchRemoteFile($url);
 
-        if ($res->getStatusCode() !== 200) {
-            return response()->json(['error' => 'Failed to fetch file.'], 502);
-        }
-
-        return response()->streamDownload(function () use ($res) {
-            $body = $res->getBody();
-            while (! $body->eof()) {
-                echo $body->read(8192);
-                flush();
+            if ($response->getStatusCode() !== 200) {
+                return response()->json(['error' => 'Download failed'], 502);
             }
-        }, $downloadFilename, [
-            'Content-Type' => $contentType,
-            'Content-Disposition' => 'attachment; filename="' . $downloadFilename . '"',
-            'Cache-Control' => 'private, max-age=0, must-revalidate',
-            'Pragma' => 'public',
-        ]);
+
+            return response()->streamDownload(
+                function () use ($response) {
+                    $body = $response->getBody();
+                    while (! $body->eof()) {
+                        echo $body->read(8192);
+                        flush();
+                    }
+                },
+                $downloadFilename,
+                [
+                    'Content-Type' => $contentType,
+                    'Content-Disposition' => 'attachment; filename="' . $downloadFilename . '"',
+                    'Cache-Control' => 'private, max-age=0, must-revalidate',
+                    'Pragma' => 'public',
+                ]
+            );
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Download failed'], 502);
+        }
     }
 
-    private function extractImageData($output, int $index): ?array
+    private function extractImageData($output, $index)
     {
-        if (
-            is_array($output) &&
-            isset($output['images']) &&
-            is_array($output['images']) &&
-            array_key_exists($index, $output['images'])
-        ) {
-            return $output['images'][$index];
+        if (!is_array($output) || !isset($output['images']) || !is_array($output['images'])) {
+            return null;
+        }
+
+        return $output['images'][$index] ?? null;
+    }
+
+    private function isValidFalUrl($url)
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        $allowedHosts = ['fal.ai', 'storage.fal.ai', 'cdn.fal.ai', 'v3.fal.media'];
+
+        return in_array($host, $allowedHosts);
+    }
+
+    private function resolveContentType($imageData)
+    {
+        if (!empty($imageData['content_type'])) {
+            return $imageData['content_type'];
+        }
+
+        $extension = $this->getExtension($imageData);
+        return $this->getContentTypeFromExtension($extension);
+    }
+
+    private function getExtension($imageData)
+    {
+        if (!empty($imageData['file_name'])) {
+            return pathinfo($imageData['file_name'], PATHINFO_EXTENSION);
+        }
+
+        if (!empty($imageData['url'])) {
+            return $this->extractExtensionFromUrl($imageData['url']);
         }
 
         return null;
     }
 
-    private function isValidFalUrl(string $url): bool
-    {
-        $host = parse_url($url, PHP_URL_HOST);
-
-        return in_array($host, ['fal.ai', 'storage.fal.ai', 'cdn.fal.ai', 'v3.fal.media']);
-    }
-
-    private function resolveContentType(array $imageData): string
-    {
-        if (! empty($imageData['content_type'])) {
-            return $imageData['content_type'];
-        }
-
-        $extension = null;
-
-        if (!empty($imageData['file_name'])) {
-            $extension = pathinfo($imageData['file_name'], PATHINFO_EXTENSION);
-        } elseif (!empty($imageData['url'])) {
-            $extension = $this->extractExtensionFromUrl($imageData['url']);
-        }
-
-        return $this->getContentTypeFromExtension($extension);
-    }
-
-    private function getContentTypeFromExtension(?string $extension): string
+    private function getContentTypeFromExtension($extension)
     {
         $mimeTypes = [
             'jpg' => 'image/jpeg',
@@ -111,39 +120,25 @@ class FalController
             'gif' => 'image/gif',
             'svg' => 'image/svg+xml',
             'webp' => 'image/webp',
-            'bmp' => 'image/bmp',
-            'ico' => 'image/x-icon',
         ];
 
         $ext = strtolower($extension ?? '');
-
         return $mimeTypes[$ext] ?? 'application/octet-stream';
     }
 
-    private function resolveFilename(
-        array $imageData,
-        string $falRequestId,
-        ?string $filename,
-        ?string $extension
-    ): string {
-        $baseName = $filename ?? $falRequestId;
+    private function resolveFilename($imageData, $falRequestId, $filename, $extension)
+    {
+        $baseName = $filename ?: $falRequestId;
 
-        if ($extension !== null) {
-            $ext = $extension;
-        } else {
-            $outputFileName = $imageData['file_name'] ?? null;
-            if ($outputFileName) {
-                $ext = pathinfo($outputFileName, PATHINFO_EXTENSION) ?: 'jpg';
-            } else {
-                $url = $imageData['url'] ?? null;
-                $ext = $url ? ($this->extractExtensionFromUrl($url) ?? 'jpg') : 'jpg';
-            }
+        if ($extension) {
+            return $baseName . '.' . $extension;
         }
 
+        $ext = $this->getExtension($imageData) ?: 'jpg';
         return $baseName . '.' . $ext;
     }
 
-    private function extractExtensionFromUrl(string $url): ?string
+    private function extractExtensionFromUrl($url)
     {
         $path = parse_url($url, PHP_URL_PATH);
         if (!$path) {
@@ -151,11 +146,10 @@ class FalController
         }
 
         $extension = pathinfo($path, PATHINFO_EXTENSION);
-
         return $extension ?: null;
     }
 
-    private function fetchRemoteFile(string $url)
+    private function fetchRemoteFile($url)
     {
         $client = new Client([
             'http_errors' => false,
