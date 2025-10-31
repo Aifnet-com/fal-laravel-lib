@@ -17,7 +17,9 @@ class FalWebhookController
             return Log::error('FAL webhook arrived but contains no request ID.');
         }
 
-        Log::debug('FAL Webhook', $request->all());
+        if (app()->environment('local')) {
+            Log::debug('FAL Webhook', $request->all());
+        }
 
         $falRequest = FalRequest::findByRequestId($request->input('request_id'));
 
