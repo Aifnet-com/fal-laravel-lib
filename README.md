@@ -20,11 +20,11 @@ Add the following environment variables to your `.env` file:
 
 ```env
 FAL_KEY=your-fal-api-key
-NGROK_URL_FOR_FAL_WEBHOOK_LOCALHOST=https://your-ngrok-url.io
+FAL_NGROK_URL_FOR_LOCALHOST=https://your-ngrok-url.io
 ```
 
 - `FAL_KEY`: Your API key from [https://fal.ai](https://fal.ai)
-- `NGROK_URL_FOR_FAL_WEBHOOK_LOCALHOST`: Used in `local` environment to map the webhook route via ngrok
+- `FAL_NGROK_URL_FOR_LOCALHOST`: Used in `local` environment to map the webhook route via ngrok
 
 ---
 
