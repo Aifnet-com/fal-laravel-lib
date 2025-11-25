@@ -20,12 +20,12 @@ class FalWebhookHelper
         return in_array($status, [FalRequest::STATUS_COMPLETED, FalRequest::STATUS_FAILED]) ? now() : null;
     }
 
-    public static function extractError($data)
+    public static function extractError($requestOutput)
     {
-        return $data['payload']['detail'][0]['msg']
-            ?? $data['detail'][0]['msg']
-            ?? $data['payload_error']
-            ?? $data['error']
+        return $requestOutput['payload']['detail'][0]['msg']
+            ?? $requestOutput['detail'][0]['msg']
+            ?? $requestOutput['payload_error']
+            ?? $requestOutput['error']
             ?? null;
     }
 }

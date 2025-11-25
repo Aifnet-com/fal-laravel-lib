@@ -11,10 +11,14 @@ class FalRequest extends Model
 
     const TYPE_NULL  = 0;
     const TYPE_AUDIO = 10;
+    const TYPE_VIDEO = 20;
+    const TYPE_IMAGE = 30;
 
     const TYPE_MAP = [
         self::TYPE_NULL  => 'unknown',
         self::TYPE_AUDIO => 'audio',
+        self::TYPE_VIDEO => 'video',
+        self::TYPE_IMAGE => 'image',
     ];
 
     const STATUS_IN_QUEUE   = 0;
