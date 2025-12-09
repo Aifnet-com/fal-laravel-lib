@@ -29,7 +29,7 @@ class FalWebhookController
 
         $status = FalWebhookHelper::resolveStatus($request->input('status'));
 
-        $updateArray = $this->getUpdateArray($request->all(), $status);
+        $updateArray = $this->getUpdateArray($falRequest, $status);
 
         $falRequest->update($updateArray);
         $falRequest->data()->update(['output' => $request->input('payload')]);
@@ -39,14 +39,14 @@ class FalWebhookController
         return true;
     }
 
-    private function getUpdateArray($requestData, $status)
+    private function getUpdateArray($falRequest, $status)
     {
         $update = [
             'status'       => $status,
             'completed_at' => FalWebhookHelper::resolveCompletionTime($status),
         ];
 
-        $error = FalWebhookHelper::extractError($requestData);
+        $error = FalWebhookHelper::extractError($falRequest);
 
         if ($error) {
             $update['error_id'] = FalError::logGetId($error);
