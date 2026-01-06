@@ -23,9 +23,9 @@ class CheckForStuckFalRequests extends Command
         foreach ($requests as $falRequest) {
             $falRequest->fail('FalRequest ID ' . $falRequest->request_id . ' timed out - refunded.');
 
-            event(new FalWebhookArrived([
-                'falRequestId' => $falRequest->request_id
-            ]));
+            dispatch(function () use ($falRequest) {
+                event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
+            })->displayName('FAL Webhook: ' . $falRequest->request_id);
 
             $failed++;
         }

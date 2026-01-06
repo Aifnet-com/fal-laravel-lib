@@ -40,7 +40,7 @@ class FalWebhookController
 
         dispatch(function () use ($falRequest) {
             event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
-        });
+        })->displayName('FAL Webhook: ' . $falRequest->request_id);
 
         return response()->noContent();
     }
