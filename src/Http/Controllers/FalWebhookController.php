@@ -3,7 +3,7 @@
 namespace Aifnet\Fal\Http\Controllers;
 
 use Aifnet\Fal\Helpers\FalWebhookHelper;
-use Aifnet\Fal\Events\FalWebhookArrived;
+use Aifnet\Fal\Jobs\ProcessFalWebhook;
 use Aifnet\Fal\Models\FalError;
 use Aifnet\Fal\Models\FalRequest;
 use Illuminate\Http\Request;
@@ -38,9 +38,7 @@ class FalWebhookController
         $falRequest->update($updateArray);
         $falRequest->data()->update(['output' => $request->input('payload')]);
 
-        dispatch(function () use ($falRequest) {
-            event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
-        })->displayName('FAL Webhook: ' . $falRequest->request_id);
+        ProcessFalWebhook::dispatch($falRequest->request_id);
 
         return response()->noContent();
     }
