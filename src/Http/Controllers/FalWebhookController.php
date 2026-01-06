@@ -24,7 +24,11 @@ class FalWebhookController
         $falRequest = FalRequest::findByRequestId($request->input('request_id'));
 
         if (empty($falRequest->id)) {
-            return false;
+            Log::warning('FAL webhook arrived but FAL Request not found.', [
+                'request_id' => $request->input('request_id'),
+            ]);
+
+            return response()->noContent();
         }
 
         $status = FalWebhookHelper::resolveStatus($request->input('status'));
@@ -34,9 +38,11 @@ class FalWebhookController
         $falRequest->update($updateArray);
         $falRequest->data()->update(['output' => $request->input('payload')]);
 
-        event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
+        dispatch(function () use ($falRequest) {
+            event(new FalWebhookArrived(['falRequestId' => $falRequest->request_id]));
+        });
 
-        return true;
+        return response()->noContent();
     }
 
     private function getUpdateArray($falRequest, $status)
