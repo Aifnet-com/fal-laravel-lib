@@ -39,6 +39,7 @@ class FalWebhookHelper
             ?? $requestOutput['detail'][0]['msg']
             ?? $requestOutput['payload_error']
             ?? $requestOutput['error']
+            ?? $requestOutput['payload']['detail']
             ?? null;
     }
 }
