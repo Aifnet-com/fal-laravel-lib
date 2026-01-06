@@ -28,6 +28,26 @@ FAL_NGROK_URL_FOR_LOCALHOST=https://your-ngrok-url.io
 
 ---
 
+## 🔄 Queue Configuration
+
+**Important:** This package requires a working queue system to function properly.
+
+Webhook processing is handled asynchronously via Laravel's queue system. Make sure you have:
+
+1. Configured a queue driver in your `.env` (e.g., `redis`, `database`, `sqs`):
+   ```env
+   QUEUE_CONNECTION=redis
+   ```
+
+2. A queue worker running:
+   ```bash
+   php artisan queue:work
+   ```
+
+Without an active queue worker, webhook events will not be processed.
+
+---
+
 ## 🧱 Migrations
 
 This package auto-loads its migrations.
