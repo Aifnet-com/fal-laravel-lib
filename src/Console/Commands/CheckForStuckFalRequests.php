@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 class CheckForStuckFalRequests extends Command
 {
     protected $signature = 'fal:check-for-stuck-requests';
-    protected $description = 'Fail FAL requests older than 10 minutes.';
+    protected $description = 'Fail FAL requests older than 30 minutes.';
 
     public function handle()
     {
-        $requests = FalRequest::where('created_at', '<=', now()->subMinutes(10))
+        $requests = FalRequest::where('created_at', '<=', now()->subMinutes(30))
             ->whereIn('status', [FalRequest::STATUS_IN_QUEUE, FalRequest::STATUS_PROCESSING])
             ->get();
 
