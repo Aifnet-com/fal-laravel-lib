@@ -21,7 +21,7 @@ class CheckForStuckFalRequests extends Command
         $failed = 0;
 
         foreach ($requests as $falRequest) {
-            $falRequest->fail('Timed out - refunded.');
+            $falRequest->fail('FalRequest ID ' . $falRequest->request_id . ' timed out - refunded.');
 
             event(new FalWebhookArrived([
                 'falRequestId' => $falRequest->request_id
