@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class FalRequestHelper
 {
-    public static $baseFalUrl = 'https://queue.fal.run/fal-ai';
+    public static $baseFalUrl = 'https://queue.fal.run';
 
     public static function buildEndpointUrl($endpointName, $withWebhook = true)
     {
