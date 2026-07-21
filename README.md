@@ -26,6 +26,14 @@ FAL_NGROK_URL_FOR_LOCALHOST=https://your-ngrok-url.io
 - `FAL_KEY`: Your API key from [https://fal.ai](https://fal.ai)
 - `FAL_NGROK_URL_FOR_LOCALHOST`: Used in `local` environment to map the webhook route via ngrok
 
+Add the key to `config/services.php` so it keeps working when the app config is cached (`php artisan config:cache`):
+
+```php
+'fal' => [
+    'key' => env('FAL_KEY'),
+],
+```
+
 ---
 
 ## 🔄 Queue Configuration
