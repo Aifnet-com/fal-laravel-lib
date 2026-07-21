@@ -44,8 +44,11 @@ class FalRequestHelper
 
     private static function createFalHttpClient()
     {
+        // config() first: env() returns null at runtime when the app config is cached.
+        $falKey = config('services.fal.key') ?: env('FAL_KEY');
+
         return Http::withHeaders([
-            'Authorization' => 'Key ' . env('FAL_KEY'),
+            'Authorization' => 'Key ' . $falKey,
             'Content-Type' => 'application/json'
         ]);
     }
